@@ -26,15 +26,20 @@
 
 \begin{titlepage}
     \centering
+    {\includegraphics*[width=0.2\textwidth]{images/matcom.jpg} \par}
+    \vspace*{1cm}
     {\bfseries\LARGE Facultad de Matemática y Computación \par}
+    \vspace*{1cm}
+    {\scshape\Large Simulación \par}
+    \vspace*{3cm}
+    {\scshape\Huge Informe: Inventario de un almacén \par}
     \vfill
-    {\scshape\LARGE Simulación \par}
-    \vfill
-    {\LARGE \textbf{Informe: Simulación del inventario de una tienda} }
-    \vfill
-    {\Large Gabriel Andr\'es Pla Lasa  C311 \par} 
+    {\Large Gabriel Andrés Pla Lasa \par} 
+    \vspace*{2cm}
+    {\small 3er año de Ciencia de la Computación}
     \vfill
 \end{titlepage}
+
 
 \section{Introducción}\label{S1}
     \subsection{Descripción del proyecto}
@@ -431,28 +436,81 @@ Para cada producto $k$ al tiempo $T$:
     
         \end{enumerate}
         
-
 \section{Modelo Matemático}\label{S4}
-\subsection{Descripción del modelo}
-Presentación del modelo matemático utilizado, incluyendo modelos probabilísticos si aplica...
+    \subsection{Análisis de la distribución del tiempo entre llegadas de clientes}
 
-\subsection{Supuestos y restricciones}
-\begin{itemize}
-    \item Supuesto 1
-    \item Supuesto 2
-    % Añade más supuestos según sea necesario
-\end{itemize}
+        \subsubsection{Modelo y Supuestos}
 
-\subsection{Comparación de resultados}
-Análisis comparativo entre los resultados obtenidos y los resultados experimentales...
+        En este sistema, se asumió que el \textbf{tiempo entre llegadas de clientes} sigue una \textbf{distribución Exponencial}. Este modelo es común en el análisis de sistemas de colas y simulaciones de eventos discretos, y se fundamenta en los siguientes supuestos:
+
+        \begin{itemize}
+            \item \textbf{Llegadas independientes}: La llegada de un cliente no afecta ni depende de la llegada de otros.
+            \item \textbf{Tasa constante de llegada}: Los clientes llegan al sistema a una tasa promedio constante $\lambda$ durante el tiempo de operación.
+            \item \textbf{Distribución exponencial}: El tiempo entre llegadas de clientes es una variable aleatoria continua con distribución Exponencial de parámetro $\lambda$.
+        \end{itemize}
+
+        Estas suposiciones implican que el proceso de llegadas de clientes puede modelarse como un \textbf{proceso de Poisson}.
+
+        \subsubsection{Restricciones}
+
+        \begin{itemize}
+            \item \textbf{Tiempo de operación finito}: El sistema simulado tiene un \texttt{closing\_time}, por lo que no se observa el comportamiento en un horizonte infinito.
+            \item \textbf{Simulación estocástica}: Los resultados dependen de las realizaciones aleatorias; diferentes seeds podrían generar pequeñas variaciones.
+            \item \textbf{Precisión del registro de eventos}: Se asume que los eventos fueron registrados con suficiente precisión temporal.
+            \item \textbf{Homogeneidad temporal}: No se consideraron variaciones en la tasa de llegada a lo largo del tiempo (por ejemplo, horas pico).
+        \end{itemize}
+
+        \subsubsection{Resultados}
+
+        \begin{figure}[H] 
+            \centering
+            \includegraphics[scale=0.4, keepaspectratio]{images/13.png}
+            \caption{Comprobaciones de la distribución exponencial en tiempos de llegada}
+            \label{fig:tiempo_llegada}
+        \end{figure}
+
+        \begin{itemize}
+            \item \textbf{Total de tiempos entre llegadas registrados}: 50,453  
+            \item \textbf{Parámetro $\lambda$ estimado} (por máxima verosimilitud): \textbf{0.9999}
+            \item \textbf{Prueba de Kolmogorov-Smirnov}:
+            \begin{itemize}
+                \item Estadístico D = 0.0038
+                \item p-value = 0.4715
+            \end{itemize}
+            \item \textbf{QQ Plot}: La gráfica muestra que los datos simulados se alinean adecuadamente con los cuantiles teóricos de una distribución exponencial, indicando un buen ajuste.
+        \end{itemize}
+
+        \subsubsection{Conclusión}
+
+        Dado que el \textbf{p-valor es mayor que 0.05}, \textbf{no se rechaza la hipótesis nula} $H_0$. Esto indica que los tiempos entre llegadas de clientes en la simulación \textbf{siguen una distribución exponencial} con parámetro $\lambda \approx 1$, lo cual es coherente con el diseño de la función de llegada utilizada.
 
 \section{Conclusiones}\label{S5}
-Resumen de los principales hallazgos y conclusiones del proyecto...
 
-\begin{itemize}
-    \item Conclusión 1
-    \item Conclusión 2
-    % Añade más conclusiones según sea necesario
-\end{itemize}
+    \subsubsection{Síntesis de Hallazgos}
+    Este estudio permitió caracterizar el comportamiento de un sistema de inventario multi-producto bajo políticas $(s,S)$, revelando importantes insights mediante simulación estocástica y análisis estadístico:
+
+    \begin{itemize}
+        \item \textbf{Jerarquía de Rentabilidad}: Se estableció un orden claro: \textbf{Producto A $>$ Producto C $>$ Producto B}. El Producto A demostró ser el más rentable (\$4206.81) gracias a su alta rotación, aunque presenta oportunidades de mejora en gestión de faltantes.
+        
+        \item \textbf{Sensibilidad a la Demanda}: El Producto C mostró mayor elasticidad-demanda ($\eta_{\pi,D} = 2.1$), beneficiándose más del crecimiento del mercado. Sin embargo, su alta volatilidad (\textit{CV} = 0.2610) lo hace riesgoso.
+        
+        \item \textbf{Implicaciones Prácticas}
+        Los resultados sugieren estrategias específicas por producto:
+        \begin{itemize}
+            \item \textbf{Producto A}: Priorizar reducción de faltantes mediante ajustes en $s$, manteniendo alta rotación
+            \item \textbf{Producto C}: Optimizar balance costo/beneficio, posiblemente aceptando mayor riesgo por margen premium
+            \item \textbf{Producto B}: Mantener como producto estabilizador del portafolio por su bajo riesgo absoluto
+        \end{itemize}
+    \end{itemize}
+
+    \subsubsection{Validación del Modelo}
+    El análisis de tiempos entre llegadas confirmó que:
+    \begin{itemize}
+        \item Los datos se ajustan a una distribución exponencial ($\lambda=0.9999$, $p=0.4715$)
+        \item El proceso de llegadas sigue efectivamente un proceso de Poisson
+        \item La simulación reproduce fielmente los supuestos teóricos de diseño
+    \end{itemize}
+
+    Este trabajo demuestra que la simulación estocástica combinada con análisis estadístico riguroso provee un marco poderoso para la toma de decisiones en gestión de inventarios, permitiendo balancear eficiencia operacional con gestión de riesgos.
 
 \end{document}
