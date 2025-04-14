@@ -166,8 +166,6 @@ Para cada producto $k$ al tiempo $T$:
 \text{\texttt{net\_profit}}_k &= R_k - H_k - C_k
 \end{align*}
 
-\newpage
-
 \section{Resultados y Experimentos}\label{S3}
 
     En este estudio se busca analizar el desempeño económico de un sistema de inventario que gestiona simultáneamente tres productos con características comerciales diferenciadas. 
@@ -207,14 +205,14 @@ Para cada producto $k$ al tiempo $T$:
         \begin{figure}[H] 
             \centering
             \includegraphics[scale=0.4, keepaspectratio]{images/1.png}
-            \caption{Ganancia neta promedio de cada producto}
+            \caption{Medias estimadas de diferentes categorias por producto}
             \label{fig:ganancia}
         \end{figure}
 
         \begin{figure}[H] 
             \centering
             \includegraphics[scale=0.4, keepaspectratio]{images/2.png}
-            \caption{Graficación de la ganancia neta promedio}
+            \caption{Ganancia neta promedio de cada producto}
             \label{fig:ganancia_graficacion}
         \end{figure}
 
@@ -288,9 +286,151 @@ Para cada producto $k$ al tiempo $T$:
         
         Este análisis permite identificar el rango de precios que maximiza la ganancia para cada producto, revelando así su \textbf{elasticidad de ingresos}. Ajustar precios dentro de ese rango puede mejorar la rentabilidad sin comprometer significativamente el volumen de ventas.
     
+        \subsection{¿Cuál producto es más rentable?}
 
+        Para entender mejor la rentabilidad relativa entre los distintos productos, se aplicó un enfoque de \textbf{bootstrapping}. En concreto, para cada par de productos, se generaron 5000 muestras bootstrap de sus ganancias netas (\texttt{net\_profit}) y se calculó la diferencia promedio entre ellas. Esto permite no solo estimar la magnitud de la diferencia, sino también evaluar cuán probable es que una de ellas supere consistentemente a la otra.
         
-\newpage
+        \begin{figure}[H] 
+            \centering
+            \includegraphics[scale=0.4, keepaspectratio]{images/6.png}
+            \caption{Resultados de comparación por bootstrapping entre productos}
+            \label{fig:bootstrapping}
+        \end{figure}
+
+        Los resultados de la Figura~\ref{fig:bootstrapping} muestran que:
+        
+        \begin{itemize}
+            \item \textbf{Producto A (Alta rotación) vs. Producto B (Bajo costo):}  
+            La diferencia promedio de ganancia fue de aproximadamente \textbf{3074.54 dólares} a favor del Producto A, y en el 100\,\% de las muestras este producto fue más rentable.  
+            Esto indica una \textbf{ventaja sólida y consistente} del Producto A frente al Producto B.
+        
+            \item \textbf{Producto A (Alta rotación) vs. Producto C (Lujo):}  
+            La diferencia promedio fue de \textbf{1255.90 dólares} a favor del Producto A, con también una probabilidad del \textbf{100\,\%} de ser más rentable.  
+            Aunque la brecha es menor que con el Producto B, el resultado sigue siendo concluyente.
+        
+            \item \textbf{Producto B (Bajo costo) vs. Producto C (Lujo):}  
+            En este caso, la diferencia promedio fue de \textbf{-1818.97 dólares}, lo que indica que el Producto C superó ampliamente al Producto B en rentabilidad. De hecho, \textbf{en ninguna muestra} el Producto B fue más rentable, con una probabilidad estimada de \textbf{0.0} de superar al Producto C.
+        \end{itemize}
+        
+        En conclusión, existe una jerarquía clara de rentabilidad entre los productos simulados: \textbf{Producto A $>$ Producto C $>$ Producto B}, con diferencias estadísticamente significativas en todos los casos. Esto puede orientar decisiones futuras sobre cuáles productos priorizar o reforzar en la estrategia de inventario.
+    
+        \subsection{¿Qué tan riesgoso es cada producto?}
+
+        Para evaluar el nivel de riesgo asociado a cada producto, se utilizó un enfoque basado en \textbf{bootstrapping} para estimar la distribución de dos métricas clave de riesgo:
+        
+        \begin{itemize}
+            \item \textbf{Desviación estándar (STD):} Mide la variabilidad absoluta de las ganancias.
+            \item \textbf{Coeficiente de variación (CV):} Mide la variabilidad relativa en proporción a la media ($CV = \frac{STD}{\text{Media}}$), permitiendo comparar productos con diferentes niveles de ganancia promedio.
+        \end{itemize}
+        
+        A partir de 1000 muestras bootstrap por producto, se obtuvieron los resultados mostrados en la Figura~\ref{fig:risk}.
+        
+        \begin{figure}[H] 
+            \centering
+            \includegraphics[scale=0.4, keepaspectratio]{images/7.png}
+            \caption{Distribución de riesgo por producto}
+            \label{fig:risk}
+        \end{figure}
+
+        Los resultados permiten concluir:
+        
+        \begin{itemize}
+            \item El \textbf{Producto C (Lujo)} presenta el mayor riesgo relativo, con un CV de 0.2610, lo que indica una alta variabilidad en relación a sus ganancias. Su STD de \$1298.47 confirma su naturaleza volátil.
+            
+            \item Aunque el \textbf{Producto B (Bajo costo)} tiene la menor desviación estándar (\$187.62), su CV (0.1635) es mayor que el del Producto A, lo que sugiere que sus ganancias son más inestables proporcionalmente a su escala.
+            
+            \item El \textbf{Producto A (Alta rotación)} muestra el perfil de riesgo más equilibrado, con una STD moderada (\$423.15) y el menor CV (0.1123), siendo el más robusto entre los tres.
+        \end{itemize}
+        
+        Este análisis complementa la evaluación de inventario, considerando no solo la ganancia esperada sino también la estabilidad de los retornos en escenarios inciertos.
+
+
+    \subsection{Sobrestock y quiebre de stock}
+
+        Durante la revision del análisis de las ganancias neta promedio de los tres productos (Figura ~\ref{fig:ganancia_graficacion}) es posible apreciar varios resultados, que a continuacion ilustramos mas claramente:
+        
+        \begin{figure}[H] 
+            \centering
+            \includegraphics[scale=0.4, keepaspectratio]{images/8.png}
+            \caption{Comparación del costo de inventario y la perdida por faltantes}
+            \label{fig:compa}
+        \end{figure}
+
+        De acuerdo a estos resultados es posible observar:
+        \begin{itemize}
+            \item El producto A a pesar de ser el producto mas rentable, es tambien quien mas sufre por quiebre de stock (perdida por faltantes o lost amount).
+            \item El producto C tambien sufre un poco por el holding cost, pero es notablemente evidente que el sobrestock (precio por almacenamiento o holding cost) afecta de manera significativa a las ganacias de este producto.
+        \end{itemize}
+        
+        Por lo tanto se pueden hacer las siguientes interrogantes:
+        \begin{enumerate}
+            \item ``¿Incrementar el punto de reorden (s) de 10 a 15 en el Producto A (Alta rotación) reduce los faltantes en al menos un 30\% sin afectar significativamente los costos de inventario?''
+
+                \vspace*{0.5cm}
+
+                Es decir, podemos plantear las siguientes hipotesis:
+                
+                \vspace*{0.3cm}
+
+                \textbf{Hipótesis Nula ($H_0$):} \textit{No hay diferencia en los faltantes entre `s=10` y `s=15`}.
+                    
+                \textbf{Hipótesis Alternativa ($H_1$):} \textit{Los faltantes son menores con `s=15`}.  
+                
+                \vspace*{0.5cm}
+
+                Para evaluar esta hipótesis se realizo la misma simulacion iterativa del analisis de las ganancias neta promedio de los tres productos, es decir, se quiere lograr un intervalo de confianza al 95\,\% para que la ganancia tuviera una amplitud menor a un umbral aceptable de 30 dolares.
+                Pero en este caso tendremos solamente a dos productos: Producto A (s=10) y Producto A (s=15).
+                
+                Luego dado que las distribuciones de faltantes pueden no ser normales y estamos interesados en verificar si los faltantes con s=10 son estadísticamente mayores que con s=15, se utilizó la prueba no paramétrica de Mann-Whitney U con alternativa unilateral (greater). Y estos fueron los resultados: 
+                
+                \begin{figure}[H] 
+                    \centering
+                    \includegraphics[scale=0.4, keepaspectratio]{images/9.png}
+                    \caption{Medias estimadas de diferentes categorias para el producto A}
+                    \label{fig:prodA}
+                \end{figure}
+        
+                \begin{figure}[H] 
+                    \centering
+                    \includegraphics[scale=0.4, keepaspectratio]{images/10.png}
+                    \caption{Impacto de s en el producto A}
+                    \label{fig:prodAg}
+                \end{figure}
+
+                Y es evidente que a patir de los resultados obtenidos un cambio para el producto A de s=15 aumentan las ganancias, se reduce la perdida por faltante en al menos 30\,\% y por ende la eficacia y la rentabilidad aumentan. 
+            
+            \item ``¿Reducir el nivel máximo de inventario (`S`) de 25 a 20 disminuirá los costos de inventario en un 25\%?''
+                
+                \vspace*{0.5cm}
+
+                Entonces, tendriamos como hipotesis:
+
+                \vspace*{0.3cm}
+
+                \textbf{Hipótesis Nula ($H_0$):} \textit{No hay diferencia en costos entre `S=25` y `S=20`}.
+                    
+                \textbf{Hipótesis Alternativa ($H_1$):} \textit{Los costos son menores con `S=20`}.  
+                \vspace*{0.5cm}
+                Luego realizando un procedimiento analago a la prueba de hipotesis vista con anterioridad, se obtienen los resultados siguientes:
+                
+                \begin{figure}[H] 
+                    \centering
+                    \includegraphics[scale=0.4, keepaspectratio]{images/11.png}
+                    \caption{Medias estimadas de diferentes categorias para el producto C}
+                    \label{fig:prodC}
+                \end{figure}
+        
+                \begin{figure}[H] 
+                    \centering
+                    \includegraphics[scale=0.4, keepaspectratio]{images/12.png}
+                    \caption{Impacto de S en el producto C}
+                    \label{fig:prodCg}
+                \end{figure}
+
+                Y entonces obtenemos que los costos de almacenamiento realmente disminuyeron, pero en cambio los faltantes aumentaron drasticamente, la ganancia se mantuvo casi igual y la eficiencia disminuyo. Por lo tanto pudiera no ser aconsejable realizar este tipo de cambios.
+    
+        \end{enumerate}
+        
 
 \section{Modelo Matemático}\label{S4}
 \subsection{Descripción del modelo}
